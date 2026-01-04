@@ -268,7 +268,7 @@ export default function RecommendationsPage() {
       {/* Recommendations Component */}
       <motion.div variants={itemVariants}>
         <MovieRecommendations 
-          title="Curated Just for You" 
+          title="Created Just for You" 
           showCategories={true} 
         />
       </motion.div>
