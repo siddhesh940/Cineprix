@@ -10,11 +10,11 @@ import { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 
 interface Props {
-    params: Promise<{ id: string }>;
+    params: { id: string };
 }
 
-export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
-    const id = (await params).id;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const id = params.id;
     const response = await getMovieInfo(id);
 
     if (!response) return { title: 'Movie not found' };
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
 // 🎬 Enhanced Movie Details Page - Premium Design
 const MovieDetailsPage = async (props: Props) => {
-    const movieId = (await props.params).id;
+    const movieId = props.params.id;
 
     const response = await getMovieInfo(movieId);
     if (!response) return notFound();
