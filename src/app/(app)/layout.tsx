@@ -1,5 +1,6 @@
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { BottomNav } from '@/components/bottom-nav';
+import Footer from '@/components/footer';
 import Sidebar from '@/components/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FavoritesProvider } from '@/context/enhanced-favorites-context';
@@ -17,12 +18,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                     
                     <div className="h-dvh overflow-hidden flex flex-col md:flex-row relative">
                         <Sidebar />
-                        <main className="flex-1 relative max-md:h-[calc(100dvh-4rem)]">
-                            <ScrollArea className="h-full">
+                        <main className="flex-1 relative max-md:h-[calc(100dvh-4rem)] flex flex-col">
+                            <ScrollArea className="flex-1">
                                 <div className="max-w-screen-xl mx-auto px-3 py-4 md:px-6 md:py-6 !pb-20 animate-fade-in">
                                     {children}
                                 </div>
                             </ScrollArea>
+                            <Footer />
                         </main>
                         <BottomNav />
                     </div>
