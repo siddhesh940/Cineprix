@@ -73,8 +73,8 @@ const MovieDetailsPage = async (props: Props) => {
                     <CardContent className="p-6">
                         <ScrollArea className="w-full whitespace-nowrap">
                             <div className="flex w-max gap-4 pb-4">
-                                {cast.map((actor, index) => (
-                                    <CastCard key={actor.id} cast={actor} index={index} />
+                                {cast.map((actor) => (
+                                    <CastCard key={actor.id} cast={actor} />
                                 ))}
                             </div>
                             <ScrollBar orientation="horizontal" className="h-2 bg-white/5" />
