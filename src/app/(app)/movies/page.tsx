@@ -7,7 +7,7 @@ import { Metadata } from 'next';
 
 const TOTAL_PAGES = 100;
 
-interface Props {
+interface MoviesPageProps {
     searchParams: Promise<{ page: string }>;
 }
 
@@ -15,8 +15,9 @@ export const metadata: Metadata = {
     title: 'Explore Movies - CinePrix',
 };
 
-const page = async ({ searchParams }: Props) => {
-    const currentPage = parseInt((await searchParams).page) || 1;
+const page = async ({ searchParams }: MoviesPageProps) => {
+    const resolvedSearchParams = await searchParams;
+    const currentPage = parseInt(resolvedSearchParams.page) || 1;
     const movies = await discoverMovies({ page: currentPage });
 
     return (
