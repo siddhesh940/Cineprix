@@ -4,7 +4,7 @@ import { useFavorites } from '@/context/enhanced-favorites-context';
 import { cn } from '@/lib/utils';
 import { IMovie } from '@/types/api-response';
 import { RecommendationService } from '@/utils/recommendation-service';
-import { Sparkleside-react';
+import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface RecommendationBadgeProps {
