@@ -125,7 +125,7 @@ export default async function MovieDetailsPage(
 
       {/* AI RECOMMENDATIONS */}
       <SimilarMovies
-        movieId={Number(params.id)}
+        movieId={Number(resolvedParams.id)}
         movieTitle={movieInfo.title}
         showTitle
       />
