@@ -62,13 +62,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single()
 
     if (!existingProfile) {
-      const metadata = user.user_metadata || {};
-      await supabase.from('profiles').insert([{
-        id: user.id,
-        email: user.email || '',
-        full_name: String(metadata.full_name || metadata.name || ''),
-        avatar_url: String(metadata.avatar_url || ''),
-      }])
+      try {
+        const metadata = user.user_metadata || {};
+        await supabase.from('profiles').insert([{
+          id: user.id,
+          email: user.email || '',
+          full_name: String(metadata.full_name || metadata.name || ''),
+          avatar_url: String(metadata.avatar_url || ''),
+        } as any])
+      } catch (error) {
+        console.log('Profile creation skipped:', error)
+      }
     }
   }
 
