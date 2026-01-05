@@ -9,11 +9,11 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: AuthError | null }>
-  signInWithGoogle: () => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ error?: AuthError }>
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error?: AuthError }>
+  signInWithGoogle: () => Promise<{ error?: AuthError }>
   signOut: () => Promise<void>
-  updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error: AuthError | null }>
+  updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error?: AuthError }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email,
       password,
     })
-    return { error }
+    return { error: error || undefined }
   }
 
   const signUp = async (email: string, password: string, fullName?: string) => {
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     })
-    return { error }
+    return { error: error || undefined }
   }
 
   const signInWithGoogle = async () => {
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     })
-    return { error }
+    return { error: error || undefined }
   }
 
   const signOut = async () => {
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Profile updates will be handled by database triggers or separate API
     console.log('Profile update requested:', updates)
-    return { error: null }
+    return { error: undefined }
   }
 
   const value = {
