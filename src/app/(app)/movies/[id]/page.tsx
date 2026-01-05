@@ -15,19 +15,11 @@ import { Film, Users } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-/* ✅ Next.js 15 compliant PageProps */
-type PageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-/* ---------------- Metadata ---------------- */
+/* ✅ DO NOT create Props / PageProps */
 export async function generateMetadata(
-  props: PageProps
+  { params }: { params: { id: string } }
 ): Promise<Metadata> {
-  const { id } = await props.params;
-  const movie = await getMovieInfo(id);
+  const movie = await getMovieInfo(params.id);
 
   if (!movie) {
     return { title: 'Movie not found - CinePix' };
@@ -53,12 +45,11 @@ export async function generateMetadata(
   };
 }
 
-/* ---------------- Page ---------------- */
+/* ✅ DEFAULT EXPORT – INLINE PARAMS */
 export default async function MovieDetailsPage(
-  props: PageProps
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await props.params;
-  const data = await getMovieInfo(id);
+  const data = await getMovieInfo(params.id);
 
   if (!data) notFound();
 
@@ -130,7 +121,7 @@ export default async function MovieDetailsPage(
       )}
 
       <SimilarMovies
-        movieId={Number(id)}
+        movieId={Number(params.id)}
         movieTitle={movieInfo.title}
         showTitle
       />
