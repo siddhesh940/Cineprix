@@ -2,27 +2,23 @@ import CastCard from '@/components/cast-card';
 import MovieCard from '@/components/movie-card';
 import MovieInfo from '@/components/movie-info';
 import { SimilarMovies } from '@/components/recommendations/similar-movies';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { getMovieInfo } from '@/utils/movies';
 import { Film, Users } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-/* ✅ DO NOT create Props / PageProps */
+/* =========================
+   METADATA (NO Props TYPE)
+========================= */
 export async function generateMetadata(
   { params }: { params: { id: string } }
 ): Promise<Metadata> {
   const movie = await getMovieInfo(params.id);
 
   if (!movie) {
-    return { title: 'Movie not found - CinePix' };
+    return { title: 'Movie Not Found - CinePix' };
   }
 
   return {
@@ -32,54 +28,53 @@ export async function generateMetadata(
       title: movie.title,
       description: movie.overview,
       images: movie.backdrop_path
-        ? [
-            {
-              url: `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`,
-              width: 1200,
-              height: 630,
-              alt: movie.title,
-            },
-          ]
+        ? [`https://image.tmdb.org/t/p/w780/${movie.backdrop_path}`]
         : [],
     },
   };
 }
 
-/* ✅ DEFAULT EXPORT – INLINE PARAMS */
+/* =========================
+   PAGE COMPONENT (NO PROPS)
+========================= */
 export default async function MovieDetailsPage(
   { params }: { params: { id: string } }
 ) {
-  const data = await getMovieInfo(params.id);
+  const movie = await getMovieInfo(params.id);
 
-  if (!data) notFound();
+  if (!movie) notFound();
 
-  const { cast, similarMovies, trailers, ...movieInfo } = data;
+  const { cast, similarMovies, trailers, ...movieInfo } = movie;
 
   return (
-    <div className="min-h-screen space-y-8 text-white">
-      <div className="rounded-2xl overflow-hidden border border-white/5 bg-gradient-to-b from-gray-900/50 to-black/50 backdrop-blur-sm">
+    <div className="min-h-screen space-y-10 text-white">
+      
+      {/* HERO */}
+      <div className="rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-gray-900/60 to-black/60 backdrop-blur">
         <MovieInfo info={{ ...movieInfo, trailers }} />
       </div>
 
+      {/* CAST */}
       {cast?.length > 0 && (
-        <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
-          <CardHeader>
+        <Card className="bg-gray-900/50 border-white/10 rounded-2xl">
+          <CardHeader className="border-b border-white/10">
             <div className="flex items-center gap-3">
               <Users className="text-blue-400" />
               <div>
                 <CardTitle>Cast & Crew</CardTitle>
-                <CardDescription>
-                  Actors who brought this story to life
-                </CardDescription>
+                <CardDescription>Actors in this movie</CardDescription>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="pt-6">
             <ScrollArea>
-              <div className="flex w-max gap-4 pb-4">
+              <div className="flex gap-4 pb-4">
                 {cast.map(actor => (
-                  <CastCard key={actor.id} cast={actor} />
+                  <CastCard
+                    key={actor.id}
+                    cast={actor}
+                  />
                 ))}
               </div>
               <ScrollBar orientation="horizontal" />
@@ -88,27 +83,26 @@ export default async function MovieDetailsPage(
         </Card>
       )}
 
+      {/* SIMILAR MOVIES */}
       {similarMovies?.length > 0 && (
-        <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
-          <CardHeader>
+        <Card className="bg-gray-900/50 border-white/10 rounded-2xl">
+          <CardHeader className="border-b border-white/10">
             <div className="flex items-center gap-3">
               <Film className="text-purple-400" />
               <div>
                 <CardTitle>More Like This</CardTitle>
-                <CardDescription>
-                  Movies you might enjoy
-                </CardDescription>
+                <CardDescription>Recommended movies</CardDescription>
               </div>
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="pt-6">
             <ScrollArea>
-              <div className="flex w-max gap-4 pb-4">
-                {similarMovies.map((movie, index) => (
+              <div className="flex gap-4 pb-4">
+                {similarMovies.map((m, index) => (
                   <MovieCard
-                    key={movie.id}
-                    movie={movie}
+                    key={m.id}
+                    movie={m}
                     index={index}
                     className="w-[180px]"
                   />
@@ -120,6 +114,7 @@ export default async function MovieDetailsPage(
         </Card>
       )}
 
+      {/* AI RECOMMENDATIONS */}
       <SimilarMovies
         movieId={Number(params.id)}
         movieTitle={movieInfo.title}
