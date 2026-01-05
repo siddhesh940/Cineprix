@@ -10,12 +10,20 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 /* =========================
-   METADATA (NO Props TYPE)
+   NEXT.JS 15 INTERFACES
+========================= */
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+/* =========================
+   METADATA GENERATION
 ========================= */
 export async function generateMetadata(
-  { params }: { params: { id: string } }
+  { params }: PageProps
 ): Promise<Metadata> {
-  const movie = await getMovieInfo(params.id);
+  const resolvedParams = await params;
+  const movie = await getMovieInfo(resolvedParams.id);
 
   if (!movie) {
     return { title: 'Movie Not Found - CinePix' };
@@ -38,9 +46,10 @@ export async function generateMetadata(
    PAGE COMPONENT (NO PROPS)
 ========================= */
 export default async function MovieDetailsPage(
-  { params }: { params: { id: string } }
+  { params }: PageProps
 ) {
-  const movie = await getMovieInfo(params.id);
+  const resolvedParams = await params;
+  const movie = await getMovieInfo(resolvedParams.id);
 
   if (!movie) notFound();
 
