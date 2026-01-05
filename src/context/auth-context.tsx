@@ -9,11 +9,11 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error?: AuthError }>
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error?: AuthError }>
-  signInWithGoogle: () => Promise<{ error?: AuthError }>
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
+  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: AuthError | null }>
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signOut: () => Promise<void>
-  updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error?: AuthError }>
+  updateProfile: (updates: { full_name?: string; avatar_url?: string }) => Promise<{ error: AuthError | null }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
