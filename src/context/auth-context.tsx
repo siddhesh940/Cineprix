@@ -62,11 +62,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single()
 
     if (!existingProfile) {
+      const metadata = user.user_metadata || {};
       await supabase.from('profiles').insert([{
         id: user.id,
         email: user.email || '',
-        full_name: (user.user_metadata?.full_name || user.user_metadata?.name || '') as string,
-        avatar_url: (user.user_metadata?.avatar_url || '') as string,
+        full_name: String(metadata.full_name || metadata.name || ''),
+        avatar_url: String(metadata.avatar_url || ''),
       }])
     }
   }
