@@ -15,13 +15,19 @@ import { Film, Users } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-/* ----------------------------------
-   Metadata (Next.js 15 compatible)
------------------------------------ */
+/* ✅ Next.js 15 compliant PageProps */
+type PageProps = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
+/* ---------------- Metadata ---------------- */
 export async function generateMetadata(
-  { params }: { params: { id: string } }
+  props: PageProps
 ): Promise<Metadata> {
-  const movie = await getMovieInfo(params.id);
+  const { id } = await props.params;
+  const movie = await getMovieInfo(id);
 
   if (!movie) {
     return { title: 'Movie not found - CinePix' };
@@ -47,13 +53,12 @@ export async function generateMetadata(
   };
 }
 
-/* ----------------------------------
-   Page
------------------------------------ */
+/* ---------------- Page ---------------- */
 export default async function MovieDetailsPage(
-  { params }: { params: { id: string } }
+  props: PageProps
 ) {
-  const data = await getMovieInfo(params.id);
+  const { id } = await props.params;
+  const data = await getMovieInfo(id);
 
   if (!data) notFound();
 
@@ -61,19 +66,15 @@ export default async function MovieDetailsPage(
 
   return (
     <div className="min-h-screen space-y-8 text-white">
-      {/* Movie Hero */}
       <div className="rounded-2xl overflow-hidden border border-white/5 bg-gradient-to-b from-gray-900/50 to-black/50 backdrop-blur-sm">
         <MovieInfo info={{ ...movieInfo, trailers }} />
       </div>
 
-      {/* Cast */}
       {cast?.length > 0 && (
         <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
-          <CardHeader className="border-b border-white/5">
+          <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-blue-500/20">
-                <Users className="size-5 text-blue-400" />
-              </div>
+              <Users className="text-blue-400" />
               <div>
                 <CardTitle>Cast & Crew</CardTitle>
                 <CardDescription>
@@ -83,10 +84,10 @@ export default async function MovieDetailsPage(
             </div>
           </CardHeader>
 
-          <CardContent className="p-6">
+          <CardContent>
             <ScrollArea>
               <div className="flex w-max gap-4 pb-4">
-                {cast.map((actor) => (
+                {cast.map(actor => (
                   <CastCard key={actor.id} cast={actor} />
                 ))}
               </div>
@@ -96,14 +97,11 @@ export default async function MovieDetailsPage(
         </Card>
       )}
 
-      {/* Similar Movies */}
       {similarMovies?.length > 0 && (
         <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
-          <CardHeader className="border-b border-white/5">
+          <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2.5 rounded-xl bg-purple-500/20">
-                <Film className="size-5 text-purple-400" />
-              </div>
+              <Film className="text-purple-400" />
               <div>
                 <CardTitle>More Like This</CardTitle>
                 <CardDescription>
@@ -113,7 +111,7 @@ export default async function MovieDetailsPage(
             </div>
           </CardHeader>
 
-          <CardContent className="p-6">
+          <CardContent>
             <ScrollArea>
               <div className="flex w-max gap-4 pb-4">
                 {similarMovies.map((movie, index) => (
@@ -131,9 +129,8 @@ export default async function MovieDetailsPage(
         </Card>
       )}
 
-      {/* AI / Recommendation Section */}
       <SimilarMovies
-        movieId={Number(params.id)}
+        movieId={Number(id)}
         movieTitle={movieInfo.title}
         showTitle
       />
