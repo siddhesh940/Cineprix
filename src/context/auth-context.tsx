@@ -54,26 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Profile creation is handled by Supabase triggers or can be done later
   const createUserProfile = async (user: User) => {
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-
-    if (!existingProfile) {
-      try {
-        const metadata = user.user_metadata || {};
-        await supabase.from('profiles').insert([{
-          id: user.id,
-          email: user.email || '',
-          full_name: String(metadata.full_name || metadata.name || ''),
-          avatar_url: String(metadata.avatar_url || ''),
-        } as any])
-      } catch (error) {
-        console.log('Profile creation skipped:', error)
-      }
-    }
+    // Skip profile creation - will be handled by database triggers
+    console.log('User authenticated:', user.id)
   }
 
   const signIn = async (email: string, password: string) => {
