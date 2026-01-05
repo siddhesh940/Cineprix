@@ -15,33 +15,31 @@ import { Film, Users } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-/* ================================
-   SEO Metadata (Next.js 15 Safe)
-================================ */
+/* ----------------------------------
+   Metadata (Next.js 15 compatible)
+----------------------------------- */
 export async function generateMetadata(
   { params }: { params: { id: string } }
 ): Promise<Metadata> {
-  const response = await getMovieInfo(params.id);
+  const movie = await getMovieInfo(params.id);
 
-  if (!response) {
-    return {
-      title: 'Movie not found - CinePrix',
-    };
+  if (!movie) {
+    return { title: 'Movie not found - CinePix' };
   }
 
   return {
-    title: `${response.title} - CinePrix`,
-    description: response.overview,
+    title: `${movie.title} - CinePix`,
+    description: movie.overview,
     openGraph: {
-      title: response.title,
-      description: response.overview,
-      images: response.backdrop_path
+      title: movie.title,
+      description: movie.overview,
+      images: movie.backdrop_path
         ? [
             {
-              url: `https://image.tmdb.org/t/p/w780/${response.backdrop_path}`,
-              width: 780,
-              height: 439,
-              alt: response.title,
+              url: `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`,
+              width: 1200,
+              height: 630,
+              alt: movie.title,
             },
           ]
         : [],
@@ -49,79 +47,74 @@ export async function generateMetadata(
   };
 }
 
-/* ================================
-   Movie Details Page
-================================ */
-export default async function MovieDetailsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const response = await getMovieInfo(params.id);
-  if (!response) notFound();
+/* ----------------------------------
+   Page
+----------------------------------- */
+export default async function MovieDetailsPage(
+  { params }: { params: { id: string } }
+) {
+  const data = await getMovieInfo(params.id);
 
-  const { cast, similarMovies, trailers, ...movieInfo } = response;
+  if (!data) notFound();
+
+  const { cast, similarMovies, trailers, ...movieInfo } = data;
 
   return (
     <div className="min-h-screen space-y-8 text-white">
-      {/* 🎬 Hero Section */}
+      {/* Movie Hero */}
       <div className="rounded-2xl overflow-hidden border border-white/5 bg-gradient-to-b from-gray-900/50 to-black/50 backdrop-blur-sm">
         <MovieInfo info={{ ...movieInfo, trailers }} />
       </div>
 
-      {/* 👥 Cast Section */}
+      {/* Cast */}
       {cast?.length > 0 && (
-        <Card className="rounded-2xl border-white/5 bg-gray-900/40 backdrop-blur-sm">
+        <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
           <CardHeader className="border-b border-white/5">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-blue-500/20 p-2.5 ring-1 ring-blue-500/30">
+              <div className="p-2.5 rounded-xl bg-blue-500/20">
                 <Users className="size-5 text-blue-400" />
               </div>
               <div>
-                <CardTitle className="text-xl text-white">
-                  Cast & Crew
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Meet the talented actors who bring this story to life
+                <CardTitle>Cast & Crew</CardTitle>
+                <CardDescription>
+                  Actors who brought this story to life
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
 
           <CardContent className="p-6">
-            <ScrollArea className="w-full whitespace-nowrap">
+            <ScrollArea>
               <div className="flex w-max gap-4 pb-4">
                 {cast.map((actor) => (
                   <CastCard key={actor.id} cast={actor} />
                 ))}
               </div>
-              <ScrollBar orientation="horizontal" className="h-2 bg-white/5" />
+              <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </CardContent>
         </Card>
       )}
 
-      {/* 🎞️ Similar Movies */}
+      {/* Similar Movies */}
       {similarMovies?.length > 0 && (
-        <Card className="rounded-2xl border-white/5 bg-gray-900/40 backdrop-blur-sm">
+        <Card className="bg-gray-900/40 border-white/5 rounded-2xl">
           <CardHeader className="border-b border-white/5">
             <div className="flex items-center gap-3">
-              <div className="rounded-xl bg-purple-500/20 p-2.5 ring-1 ring-purple-500/30">
+              <div className="p-2.5 rounded-xl bg-purple-500/20">
                 <Film className="size-5 text-purple-400" />
               </div>
               <div>
-                <CardTitle className="text-xl text-white">
-                  More Like This
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Discover similar movies you might enjoy
+                <CardTitle>More Like This</CardTitle>
+                <CardDescription>
+                  Movies you might enjoy
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
 
           <CardContent className="p-6">
-            <ScrollArea className="w-full whitespace-nowrap">
+            <ScrollArea>
               <div className="flex w-max gap-4 pb-4">
                 {similarMovies.map((movie, index) => (
                   <MovieCard
@@ -132,20 +125,18 @@ export default async function MovieDetailsPage({
                   />
                 ))}
               </div>
-              <ScrollBar orientation="horizontal" className="h-2 bg-white/5" />
+              <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </CardContent>
         </Card>
       )}
 
-      {/* ⭐ Smart Recommendations */}
-      <div className="overflow-hidden rounded-2xl">
-        <SimilarMovies
-          movieId={Number(params.id)}
-          movieTitle={movieInfo.title}
-          showTitle
-        />
-      </div>
+      {/* AI / Recommendation Section */}
+      <SimilarMovies
+        movieId={Number(params.id)}
+        movieTitle={movieInfo.title}
+        showTitle
+      />
     </div>
   );
 }
