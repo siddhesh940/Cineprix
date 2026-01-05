@@ -23,8 +23,8 @@ const CastCard = ({ cast, className }: Props) => {
                 {/* Profile Image */}
                 <div className="absolute inset-0 w-full h-full">
                     <Image
-                        src={getImageUrl(cast.profile_path, 'w342')}
-                        placeholderSrc={getImageUrl(cast.profile_path, 'w154')}
+                        src={getImageUrl(cast.profile_path || '', 'w342')}
+                        placeholderSrc={getImageUrl(cast.profile_path || '', 'w154')}
                         alt={cast.name}
                     />
                 </div>
