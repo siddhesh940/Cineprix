@@ -3,8 +3,7 @@
 import { useFavorites } from '@/context/enhanced-favorites-context';
 import { cn } from '@/lib/utils';
 import { IMovie } from '@/types/api-response';
-import { RecommendationService } from '@/utils/recommendation-service';
-import { Sparkleside-react';
+import { Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface RecommendationBadgeProps {
@@ -14,19 +13,20 @@ interface RecommendationBadgeProps {
 
 export function RecommendationBadge({ movie, className }: RecommendationBadgeProps) {
   const { favorites } = useFavorites();
-  const [reasons, setReasons] = useState<string[]>([]);
   const [isRecommended, setIsRecommended] = useState(false);
 
   useEffect(() => {
+    // Simple recommendation logic based on favorites
     if (favorites.length > 0) {
-      const preferences = RecommendationService.analyzeUserPreferences(favorites);
-      const recommendationReasons = RecommendationService.getRecommendationReasons(movie, preferences);
-      setReasons(recommendationReasons);
-      setIsRecommended(recommendationReasons.length > 0);
+      const isInFavorites = favorites.some(fav => fav.id === movie.id);
+      const hasSimilarGenres = favorites.some(fav => 
+        fav.genre_ids?.some(genreId => movie.genre_ids?.includes(genreId))
+      );
+      setIsRecommended(!isInFavorites && hasSimilarGenres);
     }
   }, [movie, favorites]);
 
-  if (!isRecommended || reasons.length === 0) {
+  if (!isRecommended) {
     return null;
   }
 
@@ -40,7 +40,7 @@ export function RecommendationBadge({ movie, className }: RecommendationBadgePro
         <span className="font-semibold">Recommended</span>
       </div>
       <div className="opacity-90">
-        {reasons[0]}
+        Based on your favorites
       </div>
     </div>
   );
