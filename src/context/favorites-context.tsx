@@ -77,7 +77,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             const { data: favoritesData, error: favError } = await supabase
                 .from('favorites')
                 .select('*')
-                .eq('user_id', user.id);
+                .eq('user_id', user.id) as { data: FavoriteRecord[] | null; error: any };
 
             if (favError) throw favError;
 
@@ -85,12 +85,12 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             const { data: watchlistData, error: watchError } = await supabase
                 .from('watchlist')
                 .select('*')
-                .eq('user_id', user.id);
+                .eq('user_id', user.id) as { data: WatchlistRecord[] | null; error: any };
 
             if (watchError) throw watchError;
 
             // Convert to IMovie format
-            const favoritesMovies = ((favoritesData || []) as FavoriteRecord[]).map(fav => ({
+            const favoritesMovies = (favoritesData || []).map((fav: FavoriteRecord) => ({
                 id: fav.movie_id,
                 title: fav.movie_title,
                 poster_path: fav.movie_poster,
@@ -108,7 +108,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 video: false
             } as IMovie));
 
-            const watchlistMovies = ((watchlistData || []) as WatchlistRecord[]).map(watch => ({
+            const watchlistMovies = (watchlistData || []).map((watch: WatchlistRecord) => ({
                 id: watch.movie_id,
                 title: watch.movie_title,
                 poster_path: watch.movie_poster,
