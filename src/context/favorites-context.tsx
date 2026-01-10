@@ -74,57 +74,65 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
         try {
             // Load favorites
-            const { data: favoritesData, error: favError } = await supabase
+            const favoritesResponse = await supabase
                 .from('favorites')
                 .select('*')
-                .eq('user_id', user.id) as { data: FavoriteRecord[] | null; error: any };
+                .eq('user_id', user.id);
 
-            if (favError) throw favError;
+            if (favoritesResponse.error) throw favoritesResponse.error;
 
             // Load watchlist
-            const { data: watchlistData, error: watchError } = await supabase
+            const watchlistResponse = await supabase
                 .from('watchlist')
                 .select('*')
-                .eq('user_id', user.id) as { data: WatchlistRecord[] | null; error: any };
+                .eq('user_id', user.id);
 
-            if (watchError) throw watchError;
+            if (watchlistResponse.error) throw watchlistResponse.error;
 
-            // Convert to IMovie format
-            const favoritesMovies = (favoritesData || []).map((fav: FavoriteRecord) => ({
-                id: fav.movie_id,
-                title: fav.movie_title,
-                poster_path: fav.movie_poster,
-                release_date: fav.movie_year ? `${fav.movie_year}-01-01` : '',
-                // Add other required IMovie properties with defaults
-                overview: '',
-                backdrop_path: '',
-                vote_average: 0,
-                vote_count: 0,
-                popularity: 0,
-                adult: false,
-                genre_ids: [],
-                original_language: '',
-                original_title: fav.movie_title,
-                video: false
-            } as IMovie));
+            // Convert to IMovie format with explicit typing
+            const favoritesMovies: IMovie[] = [];
+            if (favoritesResponse.data) {
+                (favoritesResponse.data as any[]).forEach((fav: any) => {
+                    favoritesMovies.push({
+                        id: fav.movie_id,
+                        title: fav.movie_title,
+                        poster_path: fav.movie_poster,
+                        release_date: fav.movie_year ? `${fav.movie_year}-01-01` : '',
+                        overview: '',
+                        backdrop_path: '',
+                        vote_average: 0,
+                        vote_count: 0,
+                        popularity: 0,
+                        adult: false,
+                        genre_ids: [],
+                        original_language: '',
+                        original_title: fav.movie_title,
+                        video: false
+                    });
+                });
+            }
 
-            const watchlistMovies = (watchlistData || []).map((watch: WatchlistRecord) => ({
-                id: watch.movie_id,
-                title: watch.movie_title,
-                poster_path: watch.movie_poster,
-                release_date: watch.movie_year ? `${watch.movie_year}-01-01` : '',
-                // Add other required IMovie properties with defaults
-                overview: '',
-                backdrop_path: '',
-                vote_average: 0,
-                vote_count: 0,
-                popularity: 0,
-                adult: false,
-                genre_ids: [],
-                original_language: '',
-                original_title: watch.movie_title,
-                video: false
-            } as IMovie));
+            const watchlistMovies: IMovie[] = [];
+            if (watchlistResponse.data) {
+                (watchlistResponse.data as any[]).forEach((watch: any) => {
+                    watchlistMovies.push({
+                        id: watch.movie_id,
+                        title: watch.movie_title,
+                        poster_path: watch.movie_poster,
+                        release_date: watch.movie_year ? `${watch.movie_year}-01-01` : '',
+                        overview: '',
+                        backdrop_path: '',
+                        vote_average: 0,
+                        vote_count: 0,
+                        popularity: 0,
+                        adult: false,
+                        genre_ids: [],
+                        original_language: '',
+                        original_title: watch.movie_title,
+                        video: false
+                    });
+                });
+            }
 
             setFavorites(favoritesMovies);
             setWatchlist(watchlistMovies);
