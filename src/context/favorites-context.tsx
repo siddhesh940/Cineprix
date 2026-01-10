@@ -90,7 +90,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (watchError) throw watchError;
 
             // Convert to IMovie format
-            const favoritesMovies = (favoritesData as FavoriteRecord[] || []).map(fav => ({
+            const favoritesMovies = ((favoritesData || []) as FavoriteRecord[]).map(fav => ({
                 id: fav.movie_id,
                 title: fav.movie_title,
                 poster_path: fav.movie_poster,
@@ -108,7 +108,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 video: false
             } as IMovie));
 
-            const watchlistMovies = (watchlistData as WatchlistRecord[] || []).map(watch => ({
+            const watchlistMovies = ((watchlistData || []) as WatchlistRecord[]).map(watch => ({
                 id: watch.movie_id,
                 title: watch.movie_title,
                 poster_path: watch.movie_poster,
