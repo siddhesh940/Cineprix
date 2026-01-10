@@ -23,6 +23,27 @@ interface FavoritesContextType {
     setFavorites: React.Dispatch<React.SetStateAction<IMovie[]>>;
 }
 
+// Database types
+interface FavoriteRecord {
+    id?: string;
+    user_id: string;
+    movie_id: number;
+    movie_title: string;
+    movie_poster: string;
+    movie_year: number | null;
+    created_at?: string;
+}
+
+interface WatchlistRecord {
+    id?: string;
+    user_id: string;
+    movie_id: number;
+    movie_title: string;
+    movie_poster: string;
+    movie_year: number | null;
+    created_at?: string;
+}
+
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
 export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -69,7 +90,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (watchError) throw watchError;
 
             // Convert to IMovie format
-            const favoritesMovies = favoritesData.map(fav => ({
+            const favoritesMovies = (favoritesData as FavoriteRecord[] || []).map(fav => ({
                 id: fav.movie_id,
                 title: fav.movie_title,
                 poster_path: fav.movie_poster,
@@ -87,7 +108,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 video: false
             } as IMovie));
 
-            const watchlistMovies = watchlistData.map(watch => ({
+            const watchlistMovies = (watchlistData as WatchlistRecord[] || []).map(watch => ({
                 id: watch.movie_id,
                 title: watch.movie_title,
                 poster_path: watch.movie_poster,

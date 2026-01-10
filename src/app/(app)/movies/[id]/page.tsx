@@ -2,7 +2,13 @@ import CastCard from '@/components/cast-card';
 import MovieCard from '@/components/movie-card';
 import MovieInfo from '@/components/movie-info';
 import { SimilarMovies } from '@/components/recommendations/similar-movies';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { getMovieInfo } from '@/utils/movies';
 import { Film, Users } from 'lucide-react';
@@ -10,20 +16,12 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 /* =========================
-   NEXT.JS 15 INTERFACES
-========================= */
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-/* =========================
-   METADATA GENERATION
+   METADATA (NO PageProps)
 ========================= */
 export async function generateMetadata(
-  { params }: PageProps
+  { params }: { params: { id: string } }
 ): Promise<Metadata> {
-  const resolvedParams = await params;
-  const movie = await getMovieInfo(resolvedParams.id);
+  const movie = await getMovieInfo(params.id);
 
   if (!movie) {
     return { title: 'Movie Not Found - CinePix' };
@@ -43,13 +41,12 @@ export async function generateMetadata(
 }
 
 /* =========================
-   PAGE COMPONENT (NO PROPS)
+   PAGE COMPONENT
 ========================= */
 export default async function MovieDetailsPage(
-  { params }: PageProps
+  { params }: { params: { id: string } }
 ) {
-  const resolvedParams = await params;
-  const movie = await getMovieInfo(resolvedParams.id);
+  const movie = await getMovieInfo(params.id);
 
   if (!movie) notFound();
 
@@ -57,7 +54,6 @@ export default async function MovieDetailsPage(
 
   return (
     <div className="min-h-screen space-y-10 text-white">
-      
       {/* HERO */}
       <div className="rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-gray-900/60 to-black/60 backdrop-blur">
         <MovieInfo info={{ ...movieInfo, trailers }} />
@@ -80,10 +76,7 @@ export default async function MovieDetailsPage(
             <ScrollArea>
               <div className="flex gap-4 pb-4">
                 {cast.map(actor => (
-                  <CastCard
-                    key={actor.id}
-                    cast={actor}
-                  />
+                  <CastCard key={actor.id} cast={actor} />
                 ))}
               </div>
               <ScrollBar orientation="horizontal" />
@@ -125,7 +118,7 @@ export default async function MovieDetailsPage(
 
       {/* AI RECOMMENDATIONS */}
       <SimilarMovies
-        movieId={Number(resolvedParams.id)}
+        movieId={Number(params.id)}
         movieTitle={movieInfo.title}
         showTitle
       />
