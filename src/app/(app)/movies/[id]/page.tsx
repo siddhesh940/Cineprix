@@ -19,9 +19,10 @@ import { notFound } from 'next/navigation';
    METADATA (NO PageProps)
 ========================= */
 export async function generateMetadata(
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Metadata> {
-  const movie = await getMovieInfo(params.id);
+  const { id } = await params;
+  const movie = await getMovieInfo(id);
 
   if (!movie) {
     return { title: 'Movie Not Found - CinePix' };
@@ -44,9 +45,10 @@ export async function generateMetadata(
    PAGE COMPONENT
 ========================= */
 export default async function MovieDetailsPage(
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const movie = await getMovieInfo(params.id);
+  const { id } = await params;
+  const movie = await getMovieInfo(id);
 
   if (!movie) notFound();
 
@@ -118,7 +120,7 @@ export default async function MovieDetailsPage(
 
       {/* AI RECOMMENDATIONS */}
       <SimilarMovies
-        movieId={Number(params.id)}
+        movieId={Number(id)}
         movieTitle={movieInfo.title}
         showTitle
       />
