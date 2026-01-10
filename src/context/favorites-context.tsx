@@ -92,7 +92,8 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             // Convert to IMovie format with explicit typing
             const favoritesMovies: IMovie[] = [];
             if (favoritesResponse.data) {
-                (favoritesResponse.data as any[]).forEach((fav: any) => {
+                // @ts-ignore - Supabase type inference issue
+                favoritesResponse.data.forEach((fav) => {
                     favoritesMovies.push({
                         id: fav.movie_id,
                         title: fav.movie_title,
@@ -114,7 +115,8 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
             const watchlistMovies: IMovie[] = [];
             if (watchlistResponse.data) {
-                (watchlistResponse.data as any[]).forEach((watch: any) => {
+                // @ts-ignore - Supabase type inference issue
+                watchlistResponse.data.forEach((watch) => {
                     watchlistMovies.push({
                         id: watch.movie_id,
                         title: watch.movie_title,
